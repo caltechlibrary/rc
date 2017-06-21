@@ -2,6 +2,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -14,6 +15,9 @@ import (
 	// Caltech Library packages
 	"github.com/caltechlibrary/cli"
 	"github.com/caltechlibrary/rc"
+
+	// 3rd Party Packages
+	x2j "github.com/basgys/goxml2json"
 )
 
 var (
@@ -35,6 +39,7 @@ var (
 	userName   string
 	userSecret string
 	payload    string
+	asJSON     bool
 )
 
 func init() {
@@ -56,6 +61,7 @@ func init() {
 	flag.StringVar(&userSecret, "password", "", "set user secret to use for authentication")
 	flag.StringVar(&method, "method", "GET", "set the http method to use for request")
 	flag.StringVar(&payload, "payload", "", "A JSON structure holding the payload data")
+	flag.BoolVar(&asJSON, "as-json", false, "Convert XML to JSON before output")
 }
 
 func main() {
@@ -123,12 +129,19 @@ func main() {
 			log.Fatal(err)
 		}
 		if src, err := api.Request(method, u.Path, data); err == nil {
-			fmt.Printf("%s\n", src)
+			if asJSON == true {
+				// FIXME: only do xml Unmarshal if response is XML
+				if s, err := x2j.Convert(bytes.NewReader(src)); err != nil {
+					log.Fatal(err)
+				} else {
+					fmt.Fprintf(out, "%s\n", s)
+					os.Exit(0)
+				}
+			}
+			fmt.Fprintf(out, "%s\n", src)
+			os.Exit(0)
 		} else {
 			log.Fatal(err)
 		}
 	}
-
-	fmt.Printf("%s not implemented", appName)
-	os.Exit(1)
 }

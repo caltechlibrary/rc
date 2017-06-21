@@ -46,6 +46,7 @@ type RestAPI struct {
 	secret   string
 	authType int
 	token    string
+	headers  map[string]string
 
 	// Timeout is the client time out period, default is 10 seconds
 	Timeout time.Duration
@@ -65,6 +66,14 @@ func New(apiURL string, authType int, clientID, clientSecret string) (*RestAPI, 
 		token:    "",
 		Timeout:  10 * time.Second,
 	}, nil
+}
+
+// AddHeader sets the header strings to send with the request
+func (api *RestAPI) AddHeader(ky, value string) {
+	if api.headers == nil {
+		api.headers = map[string]string{}
+	}
+	api.headers[ky] = value
 }
 
 func (api *RestAPI) Login() error {
@@ -110,6 +119,11 @@ func (api *RestAPI) oAuthLogin() error {
 		}
 		// Need to set the mime type for the content we're sending to the RestAPI
 		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+		// Add any additional custom headers
+		for k, v := range api.headers {
+			req.Header.Add(k, v)
+		}
 
 		// Get the text response for RestAPI
 		resp, err := client.Do(req)
