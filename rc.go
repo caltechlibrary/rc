@@ -143,7 +143,10 @@ func (api *RestAPI) oAuthLogin() error {
 
 // basicAuthLogin() implement basic HTTP Authorization
 func (api *RestAPI) basicAuthLogin() error {
-	return fmt.Errorf("basicAuthLogin() not implemented")
+	if api.id == "" || api.secret == "" {
+		return fmt.Errorf("Missing username or password for Basic Auth request")
+	}
+	return nil
 }
 
 // shibbolethLogin() implement Shibboleth HTTP Authorization
@@ -179,6 +182,10 @@ func (api *RestAPI) Request(method, docPath string, payload map[string]string) (
 		req, err = http.NewRequest("GET", u.String(), nil)
 		if err != nil {
 			return nil, err
+		}
+		// NOTE: If we're using Basic Auth setup the request with it
+		if api.authType == BasicAuth {
+			req.SetBasicAuth(api.id, api.secret)
 		}
 		// NOTE: If we've authenticated we need to path the auth token
 		if len(api.token) > 0 {
