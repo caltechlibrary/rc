@@ -60,14 +60,19 @@ func init() {
 
 func main() {
 	appName := path.Base(os.Args[0])
-	flag.Parse()
-	args := flag.Args()
 
 	// Configuration and command line interation
 	cfg := cli.New(appName, appName, fmt.Sprintf(rc.LicenseText, appName, rc.Version), rc.Version)
 	cfg.UsageText = fmt.Sprintf(usage, appName)
 	cfg.DescriptionText = fmt.Sprintf(description, appName)
 	cfg.ExampleText = examples
+
+	userName = cfg.CheckOption("username", cfg.MergeEnv("username", userName), false)
+	userSecret = cfg.CheckOption("password", cfg.MergeEnv("password", userSecret), false)
+	authMethod = cfg.CheckOption("auth_method", cfg.MergeEnv("auth_method", authMethod), false)
+
+	flag.Parse()
+	args := flag.Args()
 
 	if showHelp == true {
 		fmt.Println(cfg.Usage())
