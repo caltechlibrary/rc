@@ -55,9 +55,9 @@ func init() {
 
 	// Application Options
 	flag.StringVar(&authMethod, "auth", "", "set authorization type (e.g. oauth, shib)")
-	flag.StringVar(&userName, "u", "", "set username for authentication")
+	flag.StringVar(&userName, "un", "", "set username for authentication")
 	flag.StringVar(&userName, "username", "", "set username for authentication")
-	flag.StringVar(&userSecret, "p", "", "set user secret to use for authentication")
+	flag.StringVar(&userSecret, "pw", "", "set user secret to use for authentication")
 	flag.StringVar(&userSecret, "password", "", "set user secret to use for authentication")
 	flag.StringVar(&method, "method", "GET", "set the http method to use for request")
 	flag.StringVar(&payload, "payload", "", "A JSON structure holding the payload data")
