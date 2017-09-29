@@ -19,7 +19,7 @@ lint:
 	golint cmds/apiexplorer/apiexplorer.go
 
 install:
-	env GOBIN=$(HOME)/bin go install cmds/apiexplorer/apiexplorer.go
+	env GOBIN=$(GOPATH)/bin go install cmds/apiexplorer/apiexplorer.go
 
 
 status:
