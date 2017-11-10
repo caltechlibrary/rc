@@ -47,25 +47,25 @@ publish: website
 dist/linux-amd64:
 	mkdir -p dist/bin
 	env GOOS=linux GOARCH=amd64 go build -o dist/bin/apiexplorer cmds/apiexplorer/apiexplorer.go
-	cd dist && zip -r $(PROJECT)-$(VERSION)-linux-amd64.zip README.md LICENSE INSTALL.md docs/* etc/* bin/*
+	cd dist && zip -r $(PROJECT)-$(VERSION)-linux-amd64.zip README.md LICENSE INSTALL.md package-versions.txt docs/* etc/* bin/*
 	rm -fR dist/bin
 
 dist/windows-amd64:
 	mkdir -p dist/bin
 	env GOOS=windows GOARCH=amd64 go build -o dist/bin/apiexplorer.exe cmds/apiexplorer/apiexplorer.go
-	cd dist && zip -r $(PROJECT)-$(VERSION)-windows-amd64.zip README.md LICENSE INSTALL.md docs/* etc/* bin/*
+	cd dist && zip -r $(PROJECT)-$(VERSION)-windows-amd64.zip README.md LICENSE INSTALL.md package-versions.txt docs/* etc/* bin/*
 	rm -fR dist/bin
 
 dist/macosx-amd64:
 	mkdir -p dist/bin
 	env GOOS=darwin GOARCH=amd64 go build -o dist/bin/apiexplorer cmds/apiexplorer/apiexplorer.go
-	cd dist && zip -r $(PROJECT)-$(VERSION)-macosx-amd64.zip README.md LICENSE INSTALL.md docs/* etc/* bin/*
+	cd dist && zip -r $(PROJECT)-$(VERSION)-macosx-amd64.zip README.md LICENSE INSTALL.md package-versions.txt docs/* etc/* bin/*
 	rm -fR dist/bin
 
 dist/raspbian-arm7:
 	mkdir -p dist/bin
 	env GOOS=linux GOARCH=arm GOARM=7 go build -o dist/bin/apiexplorer cmds/apiexplorer/apiexplorer.go
-	cd dist && zip -r $(PROJECT)-$(VERSION)-raspbian-arm7.zip README.md LICENSE INSTALL.md docs/* etc/* bin/*
+	cd dist && zip -r $(PROJECT)-$(VERSION)-raspbian-arm7.zip README.md LICENSE INSTALL.md package-versions.txt docs/* etc/* bin/*
 	rm -fR dist/bin
 
 distribute_docs:
@@ -73,6 +73,7 @@ distribute_docs:
 	cp -v README.md dist/
 	cp -v LICENSE dist/
 	cp -v INSTALL.md dist/
+	./package-versions.bash > dist/package-versions.txt
 	if [ -d docs ]; then mkdir -p dist/docs; cp -v docs/*.md dist/docs/; fi
 	if [ -d etc ]; then mkdir -p dist/etc; cp -v etc/*-example dist/etc/; fi
 

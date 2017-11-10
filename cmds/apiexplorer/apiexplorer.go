@@ -68,7 +68,8 @@ func main() {
 	appName := path.Base(os.Args[0])
 
 	// Configuration and command line interation
-	cfg := cli.New(appName, appName, fmt.Sprintf(rc.LicenseText, appName, rc.Version), rc.Version)
+	cfg := cli.New(appName, appName, rc.Version)
+	cfg.LicenseText = fmt.Sprintf(rc.LicenseText, appName, rc.Version)
 	cfg.UsageText = fmt.Sprintf(usage, appName)
 	cfg.DescriptionText = fmt.Sprintf(description, appName)
 	cfg.ExampleText = examples
