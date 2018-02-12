@@ -222,9 +222,12 @@ func (api *RestAPI) Request(method, docPath string, payload map[string]string) (
 		return nil, err
 	}
 	defer resp.Body.Close()
-	src, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
+	if resp.StatusCode == 200 {
+		src, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+		return src, nil
 	}
-	return src, nil
+	return nil, fmt.Errorf("%s for %s", resp.Status, u.String())
 }
