@@ -230,5 +230,5 @@ func (api *RestAPI) Request(method, docPath string, payload map[string]string) (
 		}
 		return src, nil
 	}
-	return nil, fmt.Errorf("%s", resp.Status)
+	return nil, fmt.Errorf("%s for %s", resp.Status, u.String())
 }
