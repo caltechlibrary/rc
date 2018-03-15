@@ -19,9 +19,13 @@ import (
 )
 
 var (
-	usage = `USAGE %s [OPTIONS] URL`
+	usage = `
+USAGE %s [OPTIONS] URL
+`
 
-	description = `%s is a demo program exercising the rc Golang package.`
+	description = `
+%s is a demo program exercising the rc Golang package.
+`
 
 	examples = ``
 
