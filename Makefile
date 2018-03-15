@@ -16,10 +16,10 @@ test:
 
 lint:
 	golint rc.go
-	golint cmds/apiexplorer/apiexplorer.go
+	golint cmd/apiexplorer/apiexplorer.go
 
 install:
-	env GOBIN=$(GOPATH)/bin go install cmds/apiexplorer/apiexplorer.go
+	env GOBIN=$(GOPATH)/bin go install cmd/apiexplorer/apiexplorer.go
 
 
 status:
@@ -29,8 +29,8 @@ save:
 	if [ "$(msg)" != "" ]; then git commit -am "$(msg)"; else git commit -am "Quick Save"; fi
 	git push origin $(BRANCH)
 
-apiexplorer: rc.go cmds/apiexplorer/apiexplorer.go
-	env go build -o bin/apiexplorer cmds/apiexplorer/apiexplorer.go
+apiexplorer: rc.go cmd/apiexplorer/apiexplorer.go
+	env go build -o bin/apiexplorer cmd/apiexplorer/apiexplorer.go
 
 
 clean:
@@ -46,25 +46,25 @@ publish: website
 
 dist/linux-amd64:
 	mkdir -p dist/bin
-	env GOOS=linux GOARCH=amd64 go build -o dist/bin/apiexplorer cmds/apiexplorer/apiexplorer.go
+	env GOOS=linux GOARCH=amd64 go build -o dist/bin/apiexplorer cmd/apiexplorer/apiexplorer.go
 	cd dist && zip -r $(PROJECT)-$(VERSION)-linux-amd64.zip README.md LICENSE INSTALL.md package-versions.txt docs/* etc/* bin/*
 	rm -fR dist/bin
 
 dist/windows-amd64:
 	mkdir -p dist/bin
-	env GOOS=windows GOARCH=amd64 go build -o dist/bin/apiexplorer.exe cmds/apiexplorer/apiexplorer.go
+	env GOOS=windows GOARCH=amd64 go build -o dist/bin/apiexplorer.exe cmd/apiexplorer/apiexplorer.go
 	cd dist && zip -r $(PROJECT)-$(VERSION)-windows-amd64.zip README.md LICENSE INSTALL.md package-versions.txt docs/* etc/* bin/*
 	rm -fR dist/bin
 
 dist/macosx-amd64:
 	mkdir -p dist/bin
-	env GOOS=darwin GOARCH=amd64 go build -o dist/bin/apiexplorer cmds/apiexplorer/apiexplorer.go
+	env GOOS=darwin GOARCH=amd64 go build -o dist/bin/apiexplorer cmd/apiexplorer/apiexplorer.go
 	cd dist && zip -r $(PROJECT)-$(VERSION)-macosx-amd64.zip README.md LICENSE INSTALL.md package-versions.txt docs/* etc/* bin/*
 	rm -fR dist/bin
 
 dist/raspbian-arm7:
 	mkdir -p dist/bin
-	env GOOS=linux GOARCH=arm GOARM=7 go build -o dist/bin/apiexplorer cmds/apiexplorer/apiexplorer.go
+	env GOOS=linux GOARCH=arm GOARM=7 go build -o dist/bin/apiexplorer cmd/apiexplorer/apiexplorer.go
 	cd dist && zip -r $(PROJECT)-$(VERSION)-raspbian-arm7.zip README.md LICENSE INSTALL.md package-versions.txt docs/* etc/* bin/*
 	rm -fR dist/bin
 

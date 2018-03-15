@@ -4,6 +4,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"encoding/xml"
 	"flag"
 	"fmt"
 	"log"
@@ -15,9 +16,6 @@ import (
 	// Caltech Library packages
 	"github.com/caltechlibrary/cli"
 	"github.com/caltechlibrary/rc"
-
-	// 3rd Party Packages
-	x2j "github.com/basgys/goxml2json"
 )
 
 var (
@@ -131,11 +129,19 @@ func main() {
 		}
 		if src, err := api.Request(method, u.Path, data); err == nil {
 			if asJSON == true {
-				// FIXME: only do xml Unmarshal if response is XML
-				if s, err := x2j.Convert(bytes.NewReader(src)); err != nil {
-					log.Fatal(err)
+				if bytes.HasPrefix(src, []byte("<")) {
+					m := map[string]interface{}{}
+					if err := xml.Unmarshal(src, &m); err != nil {
+						log.Fatal(err)
+					} else {
+						s, err := json.Marshal(m)
+						if err != nil {
+							log.Fatal(err)
+						}
+						fmt.Sprintf("%s\n", s)
+					}
 				} else {
-					fmt.Fprintf(out, "%s\n", s)
+					fmt.Fprintf(out, "%s\n", src)
 					os.Exit(0)
 				}
 			}
