@@ -169,6 +169,7 @@ func (api *RestAPI) shibbolethLogin() error {
 }
 
 // Request contacts the Rest API and returns the full read response body, and error
+// payload is the used to build the URL Query object (e.g. ?key=value&key1=value...)
 func (api *RestAPI) Request(method, docPath string, payload map[string]string) ([]byte, error) {
 	var (
 		req *http.Request
