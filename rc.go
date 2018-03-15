@@ -226,5 +226,8 @@ func (api *RestAPI) Request(method, docPath string, payload map[string]string) (
 	if err != nil {
 		return nil, err
 	}
+	if resp.StatusCode != 200 {
+		return src, fmt.Errorf("%s", resp.Status)
+	}
 	return src, nil
 }
