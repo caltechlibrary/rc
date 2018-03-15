@@ -169,6 +169,7 @@ func (api *RestAPI) shibbolethLogin() error {
 }
 
 // Request contacts the Rest API and returns the full read response body, and error
+// payload is the used to build the URL Query object (e.g. ?key=value&key1=value...)
 func (api *RestAPI) Request(method, docPath string, payload map[string]string) ([]byte, error) {
 	var (
 		req *http.Request
@@ -222,12 +223,12 @@ func (api *RestAPI) Request(method, docPath string, payload map[string]string) (
 		return nil, err
 	}
 	defer resp.Body.Close()
-	src, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
+	if resp.StatusCode == 200 {
+		src, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+		return src, nil
 	}
-	if resp.StatusCode != 200 {
-		return src, fmt.Errorf("%s", resp.Status)
-	}
-	return src, nil
+	return nil, fmt.Errorf("%s", resp.Status)
 }
