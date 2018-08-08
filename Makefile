@@ -36,6 +36,11 @@ apiexplorer: rc.go cmd/apiexplorer/apiexplorer.go
 clean:
 	if [ -d bin ]; then /bin/rm -fR bin; fi
 	if [ -d dist ]; then /bin/rm -fR dist; fi
+	if [ -d man ]; then /bin/rm -fR man; fi
+
+man: build
+	mkdir -p man/man1
+	bin/apiexplorer -generate-manpage | nroff -Tutf8 -man > man/man1/apiexplorer.1
 
 website:
 	./mk-website.bash

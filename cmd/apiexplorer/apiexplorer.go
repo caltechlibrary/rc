@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"encoding/xml"
-	"flag"
 	"fmt"
 	"log"
 	"net/url"
@@ -19,21 +18,32 @@ import (
 )
 
 var (
-	usage = `
-USAGE %s [OPTIONS] URL
+	synopsis = `
+_apiexplorer_ is a demo of rc package for accessing REST API
 `
 
 	description = `
-%s is a demo program exercising the rc Golang package.
+_apiexploere_ is a demo program exercising the rc Golang package.
 `
 
-	examples = ``
+	examples = `
+_apiexplorer_ accessing a public DataCite API for DOI
+"10.22002/D1.924".
+
+` + "```" + `
+    apiexplorer -method GET \
+    "https://api.datacite.org/works/10.22002/D1.924?email=jdoe@example.edu"
+` + "```" + `
+
+	`
 
 	// Standard Options
-	showHelp    bool
-	showLicense bool
-	showVersion bool
-	outputFName string
+	showHelp         bool
+	showLicense      bool
+	showVersion      bool
+	outputFName      string
+	generateMarkdown bool
+	generateManPage  bool
 
 	// Application Options
 	authMethod string
@@ -44,57 +54,71 @@ USAGE %s [OPTIONS] URL
 	asJSON     bool
 )
 
-func init() {
-	// Standard Options
-	flag.BoolVar(&showHelp, "h", false, "display help")
-	flag.BoolVar(&showHelp, "help", false, "display help")
-	flag.BoolVar(&showLicense, "l", false, "display license")
-	flag.BoolVar(&showLicense, "license", false, "display license")
-	flag.BoolVar(&showVersion, "v", false, "display version")
-	flag.BoolVar(&showVersion, "version", false, "display version")
-	flag.StringVar(&outputFName, "o", "", "output filename")
-	flag.StringVar(&outputFName, "output", "", "output filename")
-
-	// Application Options
-	flag.StringVar(&authMethod, "auth", "", "set authorization type (e.g. oauth, shib)")
-	flag.StringVar(&userName, "un", "", "set username for authentication")
-	flag.StringVar(&userName, "username", "", "set username for authentication")
-	flag.StringVar(&userSecret, "pw", "", "set user secret to use for authentication")
-	flag.StringVar(&userSecret, "password", "", "set user secret to use for authentication")
-	flag.StringVar(&method, "method", "GET", "set the http method to use for request")
-	flag.StringVar(&payload, "payload", "", "A JSON structure holding the payload data")
-	flag.BoolVar(&asJSON, "as-json", false, "Convert XML to JSON before output")
-}
-
 func main() {
 	appName := path.Base(os.Args[0])
 
 	// Configuration and command line interation
-	cfg := cli.New(appName, appName, rc.Version)
-	cfg.LicenseText = fmt.Sprintf(rc.LicenseText, appName, rc.Version)
-	cfg.UsageText = fmt.Sprintf(usage, appName)
-	cfg.DescriptionText = fmt.Sprintf(description, appName)
-	cfg.ExampleText = examples
+	app := cli.NewCli(rc.Version)
+	app.AddHelp("synopsis", []byte(synopsis))
+	app.AddHelp("description", []byte(description))
+	app.AddHelp("examples", []byte(examples))
+	app.AddHelp("license", []byte(fmt.Sprintf(rc.LicenseText, appName, rc.Version)))
 
-	userName = cfg.CheckOption("username", cfg.MergeEnv("username", userName), false)
-	userSecret = cfg.CheckOption("password", cfg.MergeEnv("password", userSecret), false)
-	authMethod = cfg.CheckOption("auth_method", cfg.MergeEnv("auth_method", authMethod), false)
+	// Standard Options
+	app.BoolVar(&showHelp, "h, help", false, "display help")
+	app.BoolVar(&showLicense, "l,license", false, "display license")
+	app.BoolVar(&showVersion, "v,version", false, "display version")
+	app.StringVar(&outputFName, "o,output", "", "output filename")
+	app.BoolVar(&generateMarkdown, "generate-markdown", false, "generate markdown documentation")
+	app.BoolVar(&generateManPage, "generate-manpage", false, "generate man page")
 
-	flag.Parse()
-	args := flag.Args()
+	// Application Options
+	app.StringVar(&authMethod, "auth", "", "set authorization type (e.g. oauth, shib)")
+	app.StringVar(&userName, "un,username", "", "set username for authentication")
+	app.StringVar(&userSecret, "pw,password", "", "set user secret to use for authentication")
+	app.StringVar(&method, "method", "GET", "set the http method to use for request")
+	app.StringVar(&payload, "payload", "", "A JSON structure holding the payload data")
+	app.BoolVar(&asJSON, "as-json", false, "Convert XML to JSON before output")
 
-	if showHelp == true {
-		fmt.Println(cfg.Usage())
+	app.Parse()
+	args := app.Args()
+
+	// Pull environment if anything is unset
+	if userName == "" {
+		userName = os.Getenv("USERNAME")
+	}
+	if userSecret == "" {
+		userSecret = os.Getenv("PASSWORD")
+	}
+	if authMethod == "" {
+		authMethod = os.Getenv("AUTH_METHOD")
+	}
+
+	// Process options
+	if generateMarkdown {
+		app.GenerateMarkdown(os.Stdout)
+		os.Exit(0)
+	}
+	if generateManPage {
+		app.GenerateManPage(os.Stdout)
+		os.Exit(0)
+	}
+	if showHelp {
+		if len(args) > 0 {
+			fmt.Fprintf(os.Stdout, app.Help(args...))
+		} else {
+			app.Usage(os.Stdout)
+		}
 		os.Exit(0)
 	}
 
-	if showLicense == true {
-		fmt.Println(cfg.License())
+	if showLicense {
+		fmt.Fprintln(os.Stdout, app.License())
 		os.Exit(0)
 	}
 
-	if showVersion == true {
-		fmt.Println(cfg.Version())
+	if showVersion {
+		fmt.Fprintln(os.Stdout, app.Version())
 		os.Exit(0)
 	}
 
