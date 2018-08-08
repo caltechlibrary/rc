@@ -5,7 +5,7 @@
     "codeRepository": "https://github.com/caltechlibrary/rc",
     "issueTracker": "https://github.com/caltechlibrary/rc/issues",
     "license": "https://data.caltech.edu/license",
-    "version": "0.0.1",
+    "version": "0.0.6",
     "author": [
         {
             "@type": "Person",
@@ -17,7 +17,7 @@
         }
     ],
     "developmentStatus": "active",
-    "downloadUrl": "https://github.com/caltechlibrary/dataset/archive/v0.0.1.zip",
+    "downloadUrl": "https://github.com/caltechlibrary/rc/releases",
     "keywords": [
         "http",
         "https",
