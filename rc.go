@@ -53,10 +53,17 @@ type RestAPI struct {
 }
 
 // New creates a new Rest Client RestAPI instance
+// If clientID and clientSecret and empty and authType
 func New(apiURL string, authType int, clientID, clientSecret string) (*RestAPI, error) {
 	u, err := url.Parse(apiURL)
 	if err != nil {
 		return nil, err
+	}
+	if len(clientID) == 0 && len(clientSecret) == 0 && u.User != nil {
+		clientID = u.User.Username()
+		if pword, ok := u.User.Password(); ok == true {
+			clientSecret = pword
+		}
 	}
 	return &RestAPI{
 		u:        u,
